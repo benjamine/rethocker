@@ -23,6 +23,9 @@ jobs:
           cd swift
           swift build -c release --arch arm64 --arch x86_64
           lipo -create \
+            .build/apple/Products/Release/rethocker-native \
+            -output ../bin/rethocker-native 2>/dev/null || \
+          lipo -create \
             .build/arm64-apple-macosx/release/rethocker-native \
             .build/x86_64-apple-macosx/release/rethocker-native \
             -output ../bin/rethocker-native

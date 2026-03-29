@@ -32,6 +32,7 @@ jobs:
     needs: check-version
     if: needs.check-version.outputs.changed == 'true'
     runs-on: macos-latest
+    environment: production  # NPM_TOKEN lives here, restricted to main branch only
 
     permissions:
       contents: write  # needed to commit the binary back
@@ -53,6 +54,10 @@ jobs:
         run: |
           cd swift
           swift build -c release --arch arm64 --arch x86_64
+          # Xcode runners output to .build/apple/Products/Release/
+          lipo -create \
+            .build/apple/Products/Release/rethocker-native \
+            -output ../bin/rethocker-native 2>/dev/null || \
           lipo -create \
             .build/arm64-apple-macosx/release/rethocker-native \
             .build/x86_64-apple-macosx/release/rethocker-native \
@@ -80,7 +85,6 @@ jobs:
           fi
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: bun publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          npm_config_registry: https://registry.npmjs.org/
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
