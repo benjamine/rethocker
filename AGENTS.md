@@ -1,5 +1,14 @@
 
-Default to using Bun instead of Node.js.
+## TypeScript style (rethocker-specific)
+
+- **No classes in the public API.** Export functions only. Functions that create
+  remappings or key handlers return a handle object (plain object with an `id`
+  and `remove()`/`enable()`/`disable()` methods) — not class instances.
+- Subclassing (e.g. EventEmitter) is acceptable internally when there is no
+  practical alternative, but must never be exposed to library consumers.
+- Prefer plain objects and closures over classes throughout the codebase.
+
+## Default to using Bun instead of Node.js.
 
 - Use `bun <file>` instead of `node <file>` or `ts-node <file>`
 - Use `bun test` instead of `jest` or `vitest`
@@ -8,16 +17,6 @@ Default to using Bun instead of Node.js.
 - Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
 - Use `bunx <package> <command>` instead of `npx <package> <command>`
 - Bun automatically loads .env, so don't use dotenv.
-
-## APIs
-
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
 
 ## Testing
 

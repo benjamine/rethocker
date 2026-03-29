@@ -1,29 +1,31 @@
 {
   "compilerOptions": {
-    // Environment setup & latest features
+    // Environment
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "Preserve",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
 
-    // Bundler mode
+    // Bundler mode (Bun)
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
-    // Best practices
+    // Strictness
     "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
     "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
 
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    // Keeps TypeScript purely type-level — no enums or namespaces that
+    // require emit to function (aligns with Bun's strip-types approach)
+    "erasableSyntaxOnly": true,
+
+    "skipLibCheck": true
   }
 }

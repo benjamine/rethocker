@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:rethocker}/swift",
+            "name": "Debug rethocker-native (swift)",
+            "target": "rethocker-native",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug rethocker-native (swift)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:rethocker}/swift",
+            "name": "Release rethocker-native (swift)",
+            "target": "rethocker-native",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release rethocker-native (swift)"
+        }
+    ]
+}

@@ -1,0 +1,346 @@
+/**
+ * Key name constants — use these for autocomplete and safe string interpolation
+ * in rule `key` fields.
+ *
+ * Every value is the key's canonical name string, exactly as the parser accepts.
+ * This means you can safely interpolate them:
+ *
+ *   `${Key.brightnessDown} ${Key.playPause}`  →  "brightnessDown playPause"
+ *   `Cmd+${Key.v}`                             →  "Cmd+v"
+ *
+ * @example
+ * rethocker([
+ *   { key: Key.capsLock,                          remap: Key.escape },
+ *   { key: `${Key.brightnessDown}`,               execute: "..." },
+ *   { key: `${Key.mediaNext} ${Key.mediaPrevious}`, handler: () => {} },
+ * ])
+ */
+export const Key = {
+  // ── Letters ──────────────────────────────────────────────────────────────
+  a: "a",
+  s: "s",
+  d: "d",
+  f: "f",
+  h: "h",
+  g: "g",
+  z: "z",
+  x: "x",
+  c: "c",
+  v: "v",
+  b: "b",
+  q: "q",
+  w: "w",
+  e: "e",
+  r: "r",
+  y: "y",
+  t: "t",
+  o: "o",
+  u: "u",
+  i: "i",
+  p: "p",
+  l: "l",
+  j: "j",
+  k: "k",
+  n: "n",
+  m: "m",
+
+  // ── Number row ───────────────────────────────────────────────────────────
+  n0: "n0",
+  n1: "n1",
+  n2: "n2",
+  n3: "n3",
+  n4: "n4",
+  n5: "n5",
+  n6: "n6",
+  n7: "n7",
+  n8: "n8",
+  n9: "n9",
+
+  // ── Punctuation ──────────────────────────────────────────────────────────
+  minus: "minus",
+  equal: "equal",
+  leftBracket: "leftBracket",
+  rightBracket: "rightBracket",
+  backslash: "backslash",
+  semicolon: "semicolon",
+  quote: "quote",
+  grave: "grave",
+  comma: "comma",
+  period: "period",
+  slash: "slash",
+
+  // ── Special / control ────────────────────────────────────────────────────
+  return: "return",
+  tab: "tab",
+  space: "space",
+  delete: "delete",
+  forwardDelete: "forwardDelete",
+  escape: "escape",
+  capsLock: "capsLock",
+  fn: "fn",
+  help: "help",
+  contextualMenu: "contextualMenu",
+
+  // ── Modifier keys ────────────────────────────────────────────────────────
+  leftCmd: "leftCmd",
+  rightCmd: "rightCmd",
+  leftShift: "leftShift",
+  rightShift: "rightShift",
+  leftAlt: "leftAlt",
+  rightAlt: "rightAlt",
+  leftCtrl: "leftCtrl",
+  rightCtrl: "rightCtrl",
+
+  // ── Arrow keys ───────────────────────────────────────────────────────────
+  left: "left",
+  right: "right",
+  down: "down",
+  up: "up",
+
+  // ── Navigation ───────────────────────────────────────────────────────────
+  home: "home",
+  end: "end",
+  pageUp: "pageUp",
+  pageDown: "pageDown",
+
+  // ── Function keys ────────────────────────────────────────────────────────
+  f1: "f1",
+  f2: "f2",
+  f3: "f3",
+  f4: "f4",
+  f5: "f5",
+  f6: "f6",
+  f7: "f7",
+  f8: "f8",
+  f9: "f9",
+  f10: "f10",
+  f11: "f11",
+  f12: "f12",
+  f13: "f13",
+  f14: "f14",
+  f15: "f15",
+  f16: "f16",
+  f17: "f17",
+  f18: "f18",
+  f19: "f19",
+  f20: "f20",
+
+  // ── Media / system keys ──────────────────────────────────────────────────
+  volumeUp: "volumeUp",
+  volumeDown: "volumeDown",
+  brightnessUp: "brightnessUp",
+  brightnessDown: "brightnessDown",
+  mute: "mute",
+  eject: "eject",
+  playPause: "playPause",
+  mediaNext: "mediaNext",
+  mediaPrevious: "mediaPrevious",
+  mediaFastForward: "mediaFastForward",
+  mediaRewind: "mediaRewind",
+  illuminationUp: "illuminationUp",
+  illuminationDown: "illuminationDown",
+  illuminationToggle: "illuminationToggle",
+
+  // ── Numpad ───────────────────────────────────────────────────────────────
+  numpad0: "numpad0",
+  numpad1: "numpad1",
+  numpad2: "numpad2",
+  numpad3: "numpad3",
+  numpad4: "numpad4",
+  numpad5: "numpad5",
+  numpad6: "numpad6",
+  numpad7: "numpad7",
+  numpad8: "numpad8",
+  numpad9: "numpad9",
+  numpadDecimal: "numpadDecimal",
+  numpadMultiply: "numpadMultiply",
+  numpadAdd: "numpadAdd",
+  numpadClear: "numpadClear",
+  numpadDivide: "numpadDivide",
+  numpadEnter: "numpadEnter",
+  numpadSubtract: "numpadSubtract",
+  numpadEquals: "numpadEquals",
+
+  // ── International / non-ANSI ─────────────────────────────────────────────
+  isoSection: "isoSection",
+  jisYen: "jisYen",
+  jisUnderscore: "jisUnderscore",
+  jisKeypadComma: "jisKeypadComma",
+  jisEisu: "jisEisu",
+  jisKana: "jisKana",
+} as const satisfies Record<string, string>;
+
+export type KeyName = keyof typeof Key;
+
+// ─── Private: name → keyCode (used only by parse-key.ts) ─────────────────────
+
+/** @internal */
+export const KEY_CODE_MAP: Record<string, number> = {
+  // Letters
+  a: 0,
+  s: 1,
+  d: 2,
+  f: 3,
+  h: 4,
+  g: 5,
+  z: 6,
+  x: 7,
+  c: 8,
+  v: 9,
+  b: 11,
+  q: 12,
+  w: 13,
+  e: 14,
+  r: 15,
+  y: 16,
+  t: 17,
+  o: 31,
+  u: 32,
+  i: 34,
+  p: 35,
+  l: 37,
+  j: 38,
+  k: 40,
+  n: 45,
+  m: 46,
+  // Number row
+  n0: 29,
+  n1: 18,
+  n2: 19,
+  n3: 20,
+  n4: 21,
+  n5: 23,
+  n6: 22,
+  n7: 26,
+  n8: 28,
+  n9: 25,
+  // Punctuation
+  minus: 27,
+  equal: 24,
+  leftbracket: 33,
+  rightbracket: 30,
+  backslash: 42,
+  semicolon: 41,
+  quote: 39,
+  grave: 50,
+  comma: 43,
+  period: 47,
+  slash: 44,
+  // Special
+  return: 36,
+  tab: 48,
+  space: 49,
+  delete: 51,
+  forwarddelete: 117,
+  escape: 53,
+  capslock: 57,
+  fn: 63,
+  help: 114,
+  contextualmenu: 110,
+  // Modifiers
+  leftcmd: 55,
+  rightcmd: 54,
+  leftshift: 56,
+  rightshift: 60,
+  leftalt: 58,
+  rightalt: 61,
+  leftctrl: 59,
+  rightctrl: 62,
+  // Arrows
+  left: 123,
+  right: 124,
+  down: 125,
+  up: 126,
+  // Navigation
+  home: 115,
+  end: 119,
+  pageup: 116,
+  pagedown: 121,
+  // Function keys
+  f1: 122,
+  f2: 120,
+  f3: 99,
+  f4: 118,
+  f5: 96,
+  f6: 97,
+  f7: 98,
+  f8: 100,
+  f9: 101,
+  f10: 109,
+  f11: 103,
+  f12: 111,
+  f13: 105,
+  f14: 107,
+  f15: 113,
+  f16: 106,
+  f17: 64,
+  f18: 79,
+  f19: 80,
+  f20: 90,
+  // Media / system keys (NX_KEYTYPE_* + 1000 offset)
+  volumeup: 1000,
+  volumedown: 1001,
+  brightnessup: 1002,
+  brightnessdown: 1003,
+  mute: 1007,
+  eject: 1014,
+  playpause: 1016,
+  medianext: 1017,
+  mediaprevious: 1018,
+  mediafastforward: 1019,
+  mediarewind: 1020,
+  illuminationup: 1021,
+  illuminationdown: 1022,
+  illuminationtoggle: 1023,
+  // Numpad
+  numpad0: 82,
+  numpad1: 83,
+  numpad2: 84,
+  numpad3: 85,
+  numpad4: 86,
+  numpad5: 87,
+  numpad6: 88,
+  numpad7: 89,
+  numpad8: 91,
+  numpad9: 92,
+  numpaddecimal: 65,
+  numpadmultiply: 67,
+  numpadadd: 69,
+  numpadclear: 71,
+  numpaddivide: 75,
+  numpadenter: 76,
+  numpadsubtract: 78,
+  numpadequals: 81,
+  // International
+  isosection: 10,
+  jisyen: 93,
+  jisunderscore: 94,
+  jiskeypadcomma: 95,
+  jiseisu: 102,
+  jiskana: 104,
+};
+
+/**
+ * Modifier key constants for use in rule triggers and remap targets.
+ * Values match the Modifier string union type exactly.
+ *
+ * @example
+ * { key: `Cmd+${Key.a}`, modifiers: [KeyModifier.Cmd] }
+ */
+export const KeyModifier = {
+  // ── Side-agnostic (matches either left or right) ──────────────────────────
+  Cmd: "cmd",
+  Shift: "shift",
+  Alt: "alt",
+  Ctrl: "ctrl",
+  Fn: "fn",
+  // ── Side-specific ─────────────────────────────────────────────────────────
+  LeftCmd: "leftCmd",
+  RightCmd: "rightCmd",
+  LeftShift: "leftShift",
+  RightShift: "rightShift",
+  LeftAlt: "leftAlt",
+  RightAlt: "rightAlt",
+  LeftCtrl: "leftCtrl",
+  RightCtrl: "rightCtrl",
+} as const satisfies Record<string, import("./types.ts").Modifier>;

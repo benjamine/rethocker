@@ -6,6 +6,13 @@ out
 dist
 *.tgz
 
+# Swift build artifacts
+swift/.build/
+swift/*.xcodeproj
+swift/*.xcworkspace
+*.o
+*.d
+
 # code coverage
 coverage
 *.lcov

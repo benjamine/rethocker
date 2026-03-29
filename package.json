@@ -1,8 +1,29 @@
 {
-  "name": "thock",
-  "module": "src/index.ts",
+  "name": "rethocker",
+  "version": "0.1.0",
+  "description": "Intercept and remap global keys on macOS — with per-app, per-device, and key-sequence support",
   "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "os": [
+    "darwin"
+  ],
+  "files": [
+    "src/",
+    "bin/rethocker-native"
+  ],
+  "scripts": {
+    "build:native": "cd swift && swift build -c release && cp .build/release/rethocker-native ../bin/rethocker-native && codesign --sign - ../bin/rethocker-native",
+    "build:native:universal": "cd swift && swift build -c release --arch arm64 --arch x86_64 && lipo -create .build/arm64-apple-macosx/release/rethocker-native .build/x86_64-apple-macosx/release/rethocker-native -output ../bin/rethocker-native && codesign --sign - ../bin/rethocker-native",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --error-on-warnings .",
+    "format": "biome format --write .",
+    "check": "biome check --error-on-warnings .",
+    "test": "bun test"
+  },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
     "@types/bun": "latest"
   },
   "peerDependencies": {
