@@ -9,6 +9,7 @@ jobs:
   build-and-release:
     name: Build & Release
     runs-on: macos-latest
+    environment: production
 
     steps:
       - uses: actions/checkout@v4
