@@ -41,14 +41,12 @@ if !requestAccessibility() {
         if checkAccessibility() && !tapStarted {
             tapStarted = true
             timer.invalidate()
-            DeviceMap.shared.start()
             AppWatcher.shared.start()
             EventTap.shared.start()
         }
     }
 } else {
     // Permission already granted
-    DeviceMap.shared.start()
     AppWatcher.shared.start()
     EventTap.shared.start()
 }

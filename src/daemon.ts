@@ -11,7 +11,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import type { DeviceInfo, KeyEvent, RethockerEvents } from "./types.ts";
+import type { KeyEvent, RethockerEvents } from "./types.ts";
 
 // ─── Typed EventEmitter (internal, never exported) ────────────────────────────
 
@@ -117,9 +117,7 @@ export function createDaemon(binaryPath: string): Daemon {
           msg.eventID as string | undefined,
         );
         break;
-      case "devices":
-        emitter.emit("devices", msg.devices as DeviceInfo[]);
-        break;
+
       case "error":
         if (msg.code === "accessibility_denied") {
           emitter.emit("accessibilityDenied");

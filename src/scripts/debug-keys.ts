@@ -5,11 +5,6 @@
  * Useful for discovering key codes and verifying app conditions before
  * writing rules.
  *
- * Note on device discrimination: CGEventTap does not expose which physical
- * keyboard generated an event. Use key codes to distinguish devices — numpad
- * keys have dedicated codes (Numpad0–Numpad9, NumpadEnter, etc.) that differ
- * from the main keyboard, so "NumpadEnter" and "return" are already distinct.
- *
  * Run with:
  *   bun src/scripts/debug-keys.ts
  */

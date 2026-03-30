@@ -66,13 +66,13 @@ final class RuleEngine {
                 type: isKeyDown ? "keydown" : "keyup",
                 keyCode: virtualKeyCode,
                 modifiers: Modifiers(),
-                device: nil, ruleID: nil, eventID: nil, suppressed: false
+                ruleID: nil, eventID: nil, suppressed: false
             ))
         }
 
         if isKeyDown {
             for seq in keydownSequences where seq.enabled {
-                if conditionsMatch(seq.conditions, device: nil) {
+                if conditionsMatch(seq.conditions) {
                     let suppress = SequenceTracker.shared.feed(
                         keyCode: virtualKeyCode, modifiers: Modifiers(), seqRule: seq
                     )
@@ -85,7 +85,7 @@ final class RuleEngine {
             guard rule.enabled else { continue }
             guard rule.trigger == combo else { continue }
             guard (isKeyDown && !rule.onKeyUp) || (!isKeyDown && rule.onKeyUp) else { continue }
-            guard conditionsMatch(rule.conditions, device: nil) else { continue }
+            guard conditionsMatch(rule.conditions) else { continue }
             return applyAction(rule.action, cgEvent: cgEvent, ruleID: rule.id)
         }
 
@@ -100,8 +100,7 @@ final class RuleEngine {
         cgEvent: CGEvent,
         eventType: CGEventType,
         keyCode: Int64,
-        modifiers: Modifiers,
-        device: DeviceInfo?
+        modifiers: Modifiers
     ) -> CGEvent? {
 
         // ── Caps Lock special handling ──────────────────────────────────────
@@ -134,7 +133,6 @@ final class RuleEngine {
                 type: typeStr,
                 keyCode: keyCode,
                 modifiers: modifiers,
-                device: device,
                 ruleID: nil,
                 eventID: nil,
                 suppressed: false
@@ -149,7 +147,7 @@ final class RuleEngine {
         // Feed sequence detectors on keydown only
         if isKeyDown {
             for seq in keydownSequences where seq.enabled {
-                if conditionsMatch(seq.conditions, device: device) {
+                if conditionsMatch(seq.conditions) {
                     let suppress = SequenceTracker.shared.feed(
                         keyCode: keyCode,
                         modifiers: modifiers.canonical,
@@ -165,7 +163,7 @@ final class RuleEngine {
             guard rule.enabled else { continue }
             guard rule.trigger == combo else { continue }
             guard (isKeyDown && !rule.onKeyUp) || (isKeyUp && rule.onKeyUp) else { continue }
-            guard conditionsMatch(rule.conditions, device: device) else { continue }
+            guard conditionsMatch(rule.conditions) else { continue }
 
             return applyAction(rule.action, cgEvent: cgEvent, ruleID: rule.id)
         }
@@ -175,7 +173,7 @@ final class RuleEngine {
 
     // MARK: - Condition evaluation (fast path)
 
-    private func conditionsMatch(_ conds: RuleConditions, device: DeviceInfo?) -> Bool {
+    private func conditionsMatch(_ conds: RuleConditions) -> Bool {
         // Active app filter
         if let appConds = conds.activeApp {
             if !AppWatcher.shared.matchesActiveApp(appConds) { return false }
@@ -189,7 +187,7 @@ final class RuleEngine {
         return true
     }
 
-    private func conditionsMatch(_ conds: SequenceConditions, device: DeviceInfo?) -> Bool {
+    private func conditionsMatch(_ conds: SequenceConditions) -> Bool {
         if let appConds = conds.activeApp {
             if !AppWatcher.shared.matchesActiveApp(appConds) { return false }
         }
@@ -208,7 +206,7 @@ final class RuleEngine {
             emit(keyEvent(
                 type: "matched", keyCode: originalKeyCode,
                 modifiers: originalModifiers,
-                device: nil, ruleID: ruleID, eventID: nil, suppressed: true
+                ruleID: ruleID, eventID: nil, suppressed: true
             ))
             return nil  // suppress
 
@@ -230,7 +228,7 @@ final class RuleEngine {
                 emit(keyEvent(
                     type: "matched", keyCode: originalKeyCode,
                     modifiers: originalModifiers,
-                    device: nil, ruleID: ruleID, eventID: nil, suppressed: true
+                    ruleID: ruleID, eventID: nil, suppressed: true
                 ))
                 return nil  // suppress the original Caps Lock flagsChanged
             } else {
@@ -240,7 +238,7 @@ final class RuleEngine {
                 emit(keyEvent(
                     type: "matched", keyCode: originalKeyCode,
                     modifiers: originalModifiers,
-                    device: nil, ruleID: ruleID, eventID: nil, suppressed: false
+                    ruleID: ruleID, eventID: nil, suppressed: false
                 ))
                 return newEvent ?? cgEvent
             }
@@ -267,7 +265,7 @@ final class RuleEngine {
             emit(keyEvent(
                 type: "matched", keyCode: originalKeyCode,
                 modifiers: originalModifiers,
-                device: nil, ruleID: ruleID, eventID: nil, suppressed: true
+                ruleID: ruleID, eventID: nil, suppressed: true
             ))
             return nil  // suppress the original key
 
@@ -284,7 +282,7 @@ final class RuleEngine {
             emit(keyEvent(
                 type: "matched", keyCode: cgEvent.getIntegerValueField(.keyboardEventKeycode),
                 modifiers: Modifiers.from(cgFlags: cgEvent.flags),
-                device: nil, ruleID: ruleID, eventID: nil, suppressed: false
+                ruleID: ruleID, eventID: nil, suppressed: false
             ))
             return nil  // suppress the original key when running a command
 
@@ -292,7 +290,7 @@ final class RuleEngine {
             emit(keyEvent(
                 type: "matched", keyCode: cgEvent.getIntegerValueField(.keyboardEventKeycode),
                 modifiers: Modifiers.from(cgFlags: cgEvent.flags),
-                device: nil, ruleID: ruleID, eventID: eventID, suppressed: true
+                ruleID: ruleID, eventID: eventID, suppressed: true
             ))
             return nil
         }
@@ -310,7 +308,6 @@ final class RuleEngine {
         type: String,
         keyCode: Int64,
         modifiers: Modifiers,
-        device: DeviceInfo?,
         ruleID: String?,
         eventID: String?,
         suppressed: Bool
@@ -323,10 +320,6 @@ final class RuleEngine {
         ]
         if let rid = ruleID { obj["ruleID"] = rid }
         if let eid = eventID { obj["eventID"] = eid }
-        if let dev = device {
-            obj["device"] = dev.id
-            if let name = dev.name { obj["deviceName"] = name }
-        }
         if let appName = AppWatcher.shared.frontmostAppName { obj["app"] = appName }
         if let bundleID = AppWatcher.shared.frontmostBundleID { obj["appBundleID"] = bundleID }
         return obj

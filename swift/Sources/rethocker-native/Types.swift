@@ -87,19 +87,6 @@ struct KeyCombo: Hashable {
     let modifiers: Modifiers  // canonical modifiers for matching
 }
 
-// MARK: - Device info
-
-struct DeviceInfo: Equatable {
-    let vendorID: Int64
-    let productID: Int64
-    let name: String?
-    let manufacturer: String?
-    let transport: String?
-    let locationID: Int?
-    // A stable string identifier we can use in rules
-    var id: String { "\(vendorID):\(productID)" }
-}
-
 // MARK: - Rule condition
 
 struct AppCondition {

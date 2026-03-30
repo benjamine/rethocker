@@ -36,7 +36,7 @@ const MODIFIER_MAP: Record<string, Modifier> = {
   rightshift: "rightShift",
   leftalt: "leftAlt",
   leftopt: "leftAlt",
-  righttalt: "rightAlt",
+  rightalt: "rightAlt",
   rightopt: "rightAlt",
   leftctrl: "leftCtrl",
   rightctrl: "rightCtrl",

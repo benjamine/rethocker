@@ -1,8 +1,6 @@
 import AppKit
 import CoreGraphics
 import Foundation
-import IOKit
-import IOKit.hid
 
 final class EventTap {
     static let shared = EventTap()
@@ -88,7 +86,6 @@ private func eventTapCallback(
 
     let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
     let modifiers = Modifiers.from(cgFlags: event.flags)
-    let device = extractDevice(from: event)
 
     // Invalidate text-input cache on app switch
     if type == .flagsChanged {
@@ -99,38 +96,9 @@ private func eventTapCallback(
         cgEvent: event,
         eventType: type,
         keyCode: keyCode,
-        modifiers: modifiers,
-        device: device
+        modifiers: modifiers
     )
 
     guard let result else { return nil }  // suppressed
     return Unmanaged.passUnretained(result)
-}
-
-// Extract HID device identity from the CGEvent source.
-// CGEventSource provides vendor/product IDs that identify the physical device.
-private func extractDevice(from event: CGEvent) -> DeviceInfo? {
-    guard let source = CGEventSource(event: event) else { return nil }
-
-    // kCGEventSourceStateHIDSystemState gives us the HID state
-    // The vendor/product IDs are in the event's source state
-    // We read them via CGEventSourceGetKeyboardType and secondary fields
-    //
-    // Note: CGEvent does NOT directly expose USB vendor/product IDs in a public API.
-    // The most reliable approach is IOHIDManager, but that's async setup.
-    // As a practical compromise: we use the CGEventSourceKeyboardType as a
-    // device discriminator. It's not the USB ID but it does differ between
-    // built-in keyboard and most external keyboards/keypads.
-    //
-    // For true per-device USB ID discrimination, the TS layer can use the
-    // IOHIDManager (via a separate enumeration command) to build a map of
-    // keyboard type → device info, then use that map here.
-
-    // CGEventTap does not expose which physical device generated an event —
-    // keyboardType only reflects keyboard layout class (ANSI/ISO/JIS), not
-    // the specific device. IOHIDManager callbacks don't fire for background
-    // processes. Per-event device discrimination is not possible via public APIs.
-    // Return nil; use key codes (e.g. kp* codes for numpad) to distinguish devices.
-    _ = source
-    return nil
 }

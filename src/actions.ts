@@ -10,11 +10,10 @@
  *
  * const rk = rethocker([
  *   { key: "Ctrl+Left",      execute: actions.window.halfLeft() },
- *   { key: "Ctrl+F",         execute: actions.focusMode.toggle() },
  *   { key: "Ctrl+Shift+S",   execute: actions.app.focus("Slack") },
  *   { key: "F8",             execute: actions.media.playPause() },
  *   // Multiple actions at once:
- *   { key: "Ctrl+Alt+L",     execute: [actions.app.focus("Slack"), actions.focusMode.on("Work")] },
+ *   { key: "Ctrl+Alt+L",     execute: [actions.window.halfLeft(), actions.app.focus("Slack")] },
  * ])
  */
 

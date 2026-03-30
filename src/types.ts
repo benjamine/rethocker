@@ -147,19 +147,6 @@ export interface SequenceHandle {
   disable(): void;
 }
 
-// ─── Device info ─────────────────────────────────────────────────────────────
-
-export interface DeviceInfo {
-  /** String used in `deviceIDs` conditions, format "vendorID:productID" */
-  id: string;
-  name?: string;
-  manufacturer?: string;
-  vendorID?: number;
-  productID?: number;
-  transport?: string;
-  locationID?: number;
-}
-
 // ─── Events ──────────────────────────────────────────────────────────────────
 
 export interface KeyEvent {
@@ -191,8 +178,6 @@ export interface RethockerEvents {
   error: [code: string, message: string];
   /** Accessibility permission denied */
   accessibilityDenied: [];
-  /** List of connected keyboards/keypads */
-  devices: [devices: DeviceInfo[]];
   /** Native process exited unexpectedly */
   exit: [code: number | null];
 }
@@ -289,10 +274,4 @@ export interface RethockerInstance {
    */
   startListening(): void;
   stopListening(): void;
-
-  /**
-   * Request the list of connected keyboards/keypads.
-   * Results are delivered via the "devices" event.
-   */
-  listDevices(): void;
 }

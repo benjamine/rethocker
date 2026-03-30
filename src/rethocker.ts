@@ -5,7 +5,7 @@
  * the public RethockerHandle interface.
  */
 
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { createDaemon } from "./daemon.ts";
 import { registerRule } from "./register-rule.ts";
 import type {
@@ -43,9 +43,15 @@ export function rethocker(
   rules: RethockerRule | RethockerRule[] = [],
   options: RethockerOptions = {},
 ): RethockerHandle {
+  // In a compiled binary, import.meta.dir is a virtual path (/$bunfs/root).
+  // Use process.execPath to find rethocker-native next to the real executable.
+  // In dev/npm mode, import.meta.dir points to src/ so we go up one level to bin/.
+  const isCompiled = import.meta.dir.startsWith("/$bunfs");
   const binaryPath =
     options.binaryPath ??
-    join(import.meta.dir, "..", "bin", "rethocker-native");
+    (isCompiled
+      ? join(dirname(process.execPath), "rethocker-native")
+      : join(import.meta.dir, "..", "bin", "rethocker-native"));
 
   const daemon = createDaemon(binaryPath);
 

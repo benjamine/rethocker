@@ -73,16 +73,13 @@ final class IPCHandler {
             guard let id = payload["id"] as? String,
                   let enabled = payload["enabled"] as? Bool else { return }
             RuleEngine.shared.setSequenceRuleEnabled(id: id, enabled: enabled)
-            SequenceTracker.shared.removeSequence(id: id)  // will re-add if re-enabled
+            if !enabled { SequenceTracker.shared.removeSequence(id: id) }
             emitAck(id)
 
         case "listen_all":
             let enable = payload["enabled"] as? Bool ?? true
             RuleEngine.shared.setListenAll(enable)
             emitAck(nil)
-
-        case "list_devices":
-            enumerateDevices()
 
         case "ping":
             RuleEngine.shared.emit(["type": "pong"])
@@ -219,22 +216,6 @@ final class IPCHandler {
             }
         }
         return m
-    }
-
-    // MARK: - Device enumeration
-
-    private func enumerateDevices() {
-        let devices: [[String: Any]] = DeviceMap.shared.allDevices.map { dev in
-            var info: [String: Any] = ["id": dev.id]
-            if let name = dev.name { info["name"] = name }
-            if let manufacturer = dev.manufacturer { info["manufacturer"] = manufacturer }
-            if let transport = dev.transport { info["transport"] = transport }
-            if let locationID = dev.locationID { info["locationID"] = locationID }
-            info["vendorID"] = dev.vendorID
-            info["productID"] = dev.productID
-            return info
-        }
-        RuleEngine.shared.emit(["type": "devices", "devices": devices])
     }
 
     // MARK: - Emit helpers
