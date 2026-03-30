@@ -196,10 +196,10 @@ Commands:
               so you can copy-paste them directly into your config
   help        Print this help message
 
-Examples:
+Install via Homebrew:
+  brew tap benjamine/tap
+  brew install rethocker
   rethocker install
-  rethocker log
-  rethocker status
 
 Docs: ${GITHUB}
 `.trim();
