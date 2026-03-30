@@ -8,7 +8,7 @@
 
 <!--- badges -->
 <p align="center">
-  <a href="https://github.com/benjamine/rethocker/actions?query=branch%3Amain"><img src="https://github.com/benjamine/rethocker/actions/workflows/ci.yml/badge.svg?event=push&branch=main" alt="rethocker CI status" /></a>
+  <a href="https://github.com/benjamine/rethocker/actions?query=branch%3Amain"><img src="https://github.com/benjamine/rethocker/actions/workflows/publish.yml/badge.svg?branch=main" alt="rethocker CI status" /></a>
   <a href="https://twitter.com/beneidel" rel="nofollow"><img src="https://img.shields.io/badge/created%20by-@beneidel-BACABA.svg" alt="Created by Benjamin Eidelman"></a>
   <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/github/license/benjamine/rethocker" alt="License"></a>
   <a href="https://www.npmjs.com/package/rethocker" rel="nofollow"><img src="https://img.shields.io/npm/dw/rethocker.svg" alt="npm"></a>
