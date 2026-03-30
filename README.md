@@ -6,6 +6,27 @@ Requires **macOS 13+** and **Accessibility permission** (prompted automatically 
 
 ## Install
 
+### Homebrew (recommended)
+
+```bash
+brew tap benjamine/tap
+brew install rethocker
+rethocker install
+```
+
+`rethocker install` scaffolds `~/.config/rethocker/default.ts` and registers a LaunchAgent that starts on login and auto-reloads whenever you save the file.
+
+```bash
+rethocker log      # live key monitor — see what rethocker captures
+rethocker status   # check if the background agent is running
+rethocker restart  # restart the background agent
+rethocker uninstall # stop and remove the LaunchAgent (run before brew uninstall)
+```
+
+### Programmatic use (TypeScript / Bun)
+
+If you want to use rethocker as a library in your own TypeScript project:
+
 ```bash
 bun add rethocker
 ```
@@ -302,13 +323,13 @@ rk.remove("caps-remap")
 
 ## Discover key codes
 
-Run the included debug script to see what keys produce:
+Run the live key monitor to see every keypress in rethocker rule syntax:
 
 ```bash
-bun node_modules/rethocker/src/scripts/debug-keys.ts
+rethocker log
 ```
 
-Output shows keyCode, modifiers, and active app for every keypress — useful for finding the right key name or checking that app filters work correctly.
+Keys pressed in quick succession appear on the same line separated by spaces, exactly as you'd write them in a rule. Useful for finding the right key name or verifying that app filters work correctly.
 
 ## Events and lifecycle
 
