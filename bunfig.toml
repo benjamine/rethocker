@@ -1,5 +1,5 @@
 [test]
-# Threshold applies to aggregate totals across all files.
-# daemon.ts is excluded from meaningful coverage (requires the native binary),
-# and rethocker.ts has subprocess-only functions that can't be unit tested.
-coverageThreshold = { lines = 0.9 }
+# daemon.ts requires the live native binary to exercise its subprocess paths —
+# exclude it from coverage so the threshold applies only to testable code.
+coveragePathIgnorePatterns = ["src/daemon.ts", "src/cli.ts", "src/scripts/**"]
+coverageThreshold = { lines = 0.9, functions = 0.9 }
