@@ -39,7 +39,18 @@ interface RuleBase {
    * app: ["Safari", "Chrome", "Firefox"]
    */
   app?: string | string[];
-  /** Advanced: full condition control. Merged with `app` if both provided. */
+  /**
+   * Restrict this rule based on whether a text input field is focused.
+   * - `true`  → fire only when a text field IS focused
+   * - `false` → fire only when NO text field is focused
+   * Omit to fire regardless of text input state.
+   *
+   * @example
+   * // Only fire when NOT in a text field (safe global shortcut)
+   * { key: "Ctrl+J", handler: () => {}, textInput: false }
+   */
+  textInput?: boolean;
+  /** Advanced: full condition control. Merged with `app` and `textInput` if both provided. */
   conditions?: RuleConditions;
   /** Start the rule disabled. */
   disabled?: boolean;

@@ -71,7 +71,7 @@ tell application "Finder"
 end tell
 set screenW to item 3 of screenBounds
 set screenH to item 4 of screenBounds
-set menuBarH to 30
+set menuBarH to item 2 of screenBounds
 set pos to ${posExpr}
 set sz to ${sizeExpr}
 ${targetBlock}

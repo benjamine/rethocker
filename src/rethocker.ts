@@ -58,10 +58,14 @@ export function rethocker(
   // ─── Rule handles ─────────────────────────────────────────────────────────
   const handles = new Map<string, RuleHandle | SequenceHandle>();
 
-  // Start daemon in background; errors surface via rk.on("error") or await rk.start()
-  // Silent — errors surface via rk.on("error") or await rk.start()
-  daemon.start().catch((_e: unknown) => {
-    /* intentional */
+  // Start daemon in background. If there's an error listener registered,
+  // startup errors are forwarded to it. Otherwise they're silently swallowed
+  // (call await rk.start() to catch them explicitly as a rejected promise).
+  daemon.start().catch((e: unknown) => {
+    if (daemon.emitter.listenerCount("error") > 0) {
+      const message = e instanceof Error ? e.message : String(e);
+      daemon.emitter.emit("error", "startup_failed", message);
+    }
   });
 
   function add(toAdd: RethockerRule | RethockerRule[]): void {

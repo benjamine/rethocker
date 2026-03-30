@@ -101,6 +101,7 @@ struct AppCondition {
 struct RuleConditions {
     var activeApp: [AppCondition]?   // OR within the array; nil = any app
     var runningApps: [AppCondition]? // OR; nil = any
+    var textInput: Bool?             // nil = don't care; true = only in text fields; false = only outside
 }
 
 // MARK: - Rule actions

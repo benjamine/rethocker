@@ -39,6 +39,7 @@ function toAppCondition(value: string): AppCondition {
 
 function buildConditions(rule: {
   app?: string | string[];
+  textInput?: boolean;
   conditions?: RuleConditions;
 }): RuleConditions | undefined {
   const base = rule.conditions ?? {};
@@ -49,10 +50,15 @@ function buildConditions(rule: {
       ? [...(base.activeApp ?? []), ...[rule.app].flat().map(toAppCondition)]
       : base.activeApp;
 
-  const merged: RuleConditions = { ...base, activeApp };
+  // textInput shorthand merges into conditions (rule-level wins over conditions)
+  const textInput = rule.textInput ?? base.textInput;
+
+  const merged: RuleConditions = { ...base, activeApp, textInput };
 
   const hasAny =
-    merged.activeApp !== undefined || merged.runningApps !== undefined;
+    merged.activeApp !== undefined ||
+    merged.runningApps !== undefined ||
+    merged.textInput !== undefined;
 
   return hasAny ? merged : undefined;
 }
@@ -158,7 +164,7 @@ function registerHandler(
     },
   );
 
-  emitter.on("sequence", (seqRuleID, eid) => {
+  const listener = (seqRuleID: string, eid: string | undefined) => {
     if (eid === eventID) {
       const event: KeyEvent = {
         type: "keydown",
@@ -170,7 +176,13 @@ function registerHandler(
       };
       rule.handler(event);
     }
-  });
+  };
+  emitter.on("sequence", listener);
+  const originalRemove = handle.remove;
+  handle.remove = () => {
+    emitter.off("sequence", listener);
+    originalRemove();
+  };
 
   return handle;
 }

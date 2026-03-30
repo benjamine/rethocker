@@ -85,7 +85,7 @@ export function intercept(
 ): RuleHandle {
   const eventID = genID("intercept");
   const handle = addRule(send, trigger, { type: "emit", eventID }, opts);
-  emitter.on("event", (eid, ruleID) => {
+  const listener = (eid: string, ruleID: string) => {
     if (eid === eventID) {
       handler({
         type: "keydown",
@@ -96,6 +96,12 @@ export function intercept(
         suppressed: true,
       });
     }
-  });
+  };
+  emitter.on("event", listener);
+  const originalRemove = handle.remove;
+  handle.remove = () => {
+    emitter.off("event", listener);
+    originalRemove();
+  };
   return handle;
 }

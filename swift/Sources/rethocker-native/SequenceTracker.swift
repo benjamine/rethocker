@@ -5,6 +5,7 @@ import Foundation
 
 struct SequenceConditions {
     var activeApp: [AppCondition]?
+    var textInput: Bool?  // nil = don't care; true = only in text fields; false = only outside
 }
 
 struct SequenceRule {
@@ -95,11 +96,20 @@ final class SequenceTracker {
         case .emit(let eventID):
             RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: eventID)
         case .run(let command):
+            let rID = rule.id
             DispatchQueue.global(qos: .userInitiated).async {
                 let proc = Process()
                 proc.executableURL = URL(fileURLWithPath: "/bin/sh")
                 proc.arguments = ["-c", command]
-                try? proc.run()
+                do {
+                    try proc.run()
+                } catch {
+                    RuleEngine.shared.emit([
+                        "type": "error",
+                        "code": "run_failed",
+                        "message": "Failed to launch shell command for sequence \(rID): \(error.localizedDescription)",
+                    ])
+                }
             }
             RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: nil)
         case .remap(let keyCode, let modifiers):

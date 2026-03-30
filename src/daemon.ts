@@ -11,6 +11,7 @@
  */
 
 import { EventEmitter } from "node:events";
+import { existsSync } from "node:fs";
 import type { KeyEvent, RethockerEvents } from "./types.ts";
 
 // ─── Typed EventEmitter (internal, never exported) ────────────────────────────
@@ -67,9 +68,33 @@ export function createDaemon(binaryPath: string): Daemon {
     [];
   let startPromise: Promise<void> | null = null;
 
+  // ─── Rule registry (for replay on daemon restart) ─────────────────────────
+  // Stores the JSON payload of every active add_rule / add_sequence command,
+  // keyed by rule ID. Updated on remove and set_enabled so replayed rules
+  // reflect the current state (not the original registration state).
+
+  const ruleRegistry = new Map<string, Record<string, unknown>>();
+  let listenAllEnabled = false;
+  let isFirstStart = true;
+
+  function trackSend(obj: Record<string, unknown>): void {
+    const cmd = obj.cmd as string | undefined;
+    if (cmd === "add_rule" || cmd === "add_sequence") {
+      ruleRegistry.set(obj.id as string, obj);
+    } else if (cmd === "remove_rule" || cmd === "remove_sequence") {
+      ruleRegistry.delete(obj.id as string);
+    } else if (cmd === "set_rule_enabled" || cmd === "set_sequence_enabled") {
+      const stored = ruleRegistry.get(obj.id as string);
+      if (stored) stored.enabled = obj.enabled;
+    } else if (cmd === "listen_all") {
+      listenAllEnabled = obj.enabled as boolean;
+    }
+  }
+
   // ─── Send / queue ─────────────────────────────────────────────────────────
 
   function send(obj: Record<string, unknown>): void {
+    trackSend(obj);
     const line = `${JSON.stringify(obj)}\n`;
     if (!_ready) {
       sendQueue.push(line);
@@ -79,6 +104,19 @@ export function createDaemon(binaryPath: string): Daemon {
   }
 
   function flushQueue(): void {
+    // On restart (not the first start), replay all registered rules first so
+    // the new daemon instance is back in the same state as before the crash.
+    if (!isFirstStart) {
+      for (const payload of ruleRegistry.values()) {
+        proc?.stdin.write(`${JSON.stringify(payload)}\n`);
+      }
+      if (listenAllEnabled) {
+        proc?.stdin.write(
+          `${JSON.stringify({ cmd: "listen_all", enabled: true })}\n`,
+        );
+      }
+    }
+    isFirstStart = false;
     for (const line of sendQueue) proc?.stdin.write(line);
     sendQueue = [];
   }
@@ -191,6 +229,19 @@ export function createDaemon(binaryPath: string): Daemon {
           reject(e);
         },
       });
+
+      if (!existsSync(binaryPath)) {
+        const err = new Error(
+          `rethocker-native binary not found at: ${binaryPath}\n` +
+            `  If installed via Homebrew, try: brew reinstall rethocker\n` +
+            `  If installed via npm/bun, try: bun add rethocker\n` +
+            `  You can also override the path with: rethocker(rules, { binaryPath: "..." })`,
+        );
+        clearTimeout(timeout);
+        reject(err);
+        startPromise = null;
+        return;
+      }
 
       proc = Bun.spawn({
         cmd: [binaryPath],

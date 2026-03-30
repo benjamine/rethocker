@@ -50,6 +50,15 @@ export interface RuleConditions {
    * Items are OR-ed; omit to not care.
    */
   runningApps?: AppCondition[];
+  /**
+   * Restrict this rule based on whether a text input field is focused.
+   * - `true`  → fire only when a text field IS focused
+   * - `false` → fire only when NO text field is focused
+   * Omit to fire regardless of text input state.
+   *
+   * Uses the macOS Accessibility API (cached at 50ms TTL).
+   */
+  textInput?: boolean;
 }
 
 // ─── Actions ─────────────────────────────────────────────────────────────────

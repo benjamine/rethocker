@@ -131,7 +131,8 @@ final class IPCHandler {
 
         let condMap = p["conditions"] as? [String: Any]
         let seqConds = SequenceConditions(
-            activeApp: parseAppConditions(condMap, key: "activeApp")
+            activeApp: parseAppConditions(condMap, key: "activeApp"),
+            textInput: condMap?["textInput"] as? Bool
         )
 
         return SequenceRule(
@@ -178,7 +179,8 @@ final class IPCHandler {
     private func parseConditions(_ p: [String: Any]?) -> RuleConditions {
         return RuleConditions(
             activeApp: parseAppConditions(p, key: "activeApp"),
-            runningApps: parseAppConditions(p, key: "runningApps")
+            runningApps: parseAppConditions(p, key: "runningApps"),
+            textInput: p?["textInput"] as? Bool
         )
     }
 

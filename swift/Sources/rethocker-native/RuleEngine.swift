@@ -184,6 +184,11 @@ final class RuleEngine {
             if !AppWatcher.shared.matchesRunningApps(runningConds) { return false }
         }
 
+        // Text input filter
+        if let textInput = conds.textInput {
+            if TextInputDetector.shared.isTextInputFocused() != textInput { return false }
+        }
+
         return true
     }
 
@@ -191,6 +196,12 @@ final class RuleEngine {
         if let appConds = conds.activeApp {
             if !AppWatcher.shared.matchesActiveApp(appConds) { return false }
         }
+
+        // Text input filter
+        if let textInput = conds.textInput {
+            if TextInputDetector.shared.isTextInputFocused() != textInput { return false }
+        }
+
         return true
     }
 
@@ -272,12 +283,20 @@ final class RuleEngine {
         case .run(let command):
             // Fire-and-forget: don't block the event tap
             let cmd = command
+            let rID = ruleID
             DispatchQueue.global(qos: .userInitiated).async {
                 let proc = Process()
                 proc.executableURL = URL(fileURLWithPath: "/bin/sh")
                 proc.arguments = ["-c", cmd]
-                try? proc.run()
-                // We don't wait for completion — the TS layer can listen for process events
+                do {
+                    try proc.run()
+                } catch {
+                    self.emit([
+                        "type": "error",
+                        "code": "run_failed",
+                        "message": "Failed to launch shell command for rule \(rID): \(error.localizedDescription)",
+                    ])
+                }
             }
             emit(keyEvent(
                 type: "matched", keyCode: cgEvent.getIntegerValueField(.keyboardEventKeycode),
