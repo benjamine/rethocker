@@ -64,11 +64,6 @@ function registerRemap(
   rule: RemapRule,
 ): RuleHandle {
   const parsed = parseKey(rule.key);
-  if (parsed.kind === "sequence") {
-    throw new Error(
-      `remap does not support sequences as trigger: "${rule.key}"`,
-    );
-  }
   const target = parseKey(rule.remap);
   const action =
     target.kind === "sequence"
@@ -78,10 +73,21 @@ function registerRemap(
           keyCode: target.combo.keyCode,
           modifiers: target.combo.modifiers,
         } as const);
-  return addRule(send, parsed.combo, action, {
+
+  if (parsed.kind === "single") {
+    return addRule(send, parsed.combo, action, {
+      id: rule.id,
+      conditions: buildConditions(rule),
+      disabled: rule.disabled,
+    });
+  }
+
+  // Sequence trigger: intercept the full sequence then post the remap target
+  return addSequence(send, parsed.steps, action, {
     id: rule.id,
-    conditions: buildConditions(rule),
+    conditions: rule.conditions,
     disabled: rule.disabled,
+    consume: true, // always consume — we're replacing the sequence
   });
 }
 

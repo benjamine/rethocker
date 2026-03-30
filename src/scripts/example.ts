@@ -20,9 +20,9 @@ const rk = rethocker([
     remap: "escape",
   },
   {
-    // you can also remap chords
+    // remap from a chord to a sequence of keys (chord to chord!)
     key: "Ctrl+H E",
-    // or remap to a chord, use `Key` for autocomplete and typesafety
+    // use `Key` for autocomplete and typesafety
     remap: `h e l l o Shift+n1 n1 ${Key.delete}`,
   },
   {

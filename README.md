@@ -23,7 +23,7 @@ const rk = rethocker([
     remap: Key.escape,
   },
 
-  // Remap a chord to another chord — single key or a whole sequence
+  // Remap key to key, chord to key, key to chord, or even chord to chord (type any sequence you want)
   // Use Key.* constants for autocomplete and safe string interpolation
   {
     key: "Ctrl+H E",

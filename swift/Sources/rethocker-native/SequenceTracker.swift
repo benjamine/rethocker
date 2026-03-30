@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 // A sequence rule: a series of key combos that must be pressed within a timeout.
@@ -101,8 +102,39 @@ final class SequenceTracker {
                 try? proc.run()
             }
             RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: nil)
-        default:
-            RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: rule.eventID)
+        case .remap(let keyCode, let modifiers):
+            // Post a single remap key event
+            DispatchQueue.global(qos: .userInteractive).async {
+                if let down = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(keyCode), keyDown: true) {
+                    down.flags = modifiers.toCGEventFlags()
+                    down.post(tap: .cgSessionEventTap)
+                }
+                if let up = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(keyCode), keyDown: false) {
+                    up.flags = modifiers.toCGEventFlags()
+                    up.post(tap: .cgSessionEventTap)
+                }
+            }
+            RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: nil)
+        case .remapSequence(let steps):
+            // Post each step in order
+            DispatchQueue.global(qos: .userInteractive).async {
+                for (index, step) in steps.enumerated() {
+                    if let down = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(step.keyCode), keyDown: true) {
+                        down.flags = step.modifiers.toCGEventFlags()
+                        down.post(tap: .cgSessionEventTap)
+                    }
+                    if let up = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(step.keyCode), keyDown: false) {
+                        up.flags = step.modifiers.toCGEventFlags()
+                        up.post(tap: .cgSessionEventTap)
+                    }
+                    if index < steps.count - 1 {
+                        Thread.sleep(forTimeInterval: 0.02)
+                    }
+                }
+            }
+            RuleEngine.shared.emitSequenceMatch(id: rule.id, eventID: nil)
+        case .suppress:
+            break  // sequence already consumed — nothing to post
         }
     }
 }
