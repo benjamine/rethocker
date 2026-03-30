@@ -1,6 +1,6 @@
 {
   "name": "rethocker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Intercept and remap global keys on macOS — with per-app and key-sequence support",
   "type": "module",
   "main": "src/index.ts",
