@@ -253,6 +253,8 @@ actions.window.thirdCenter()
 actions.window.thirdRight()
 actions.window.quarterTopLeft()
 actions.window.maximize()
+
+// NOTE: you can use this to compose any custom layouts
 actions.window.halfLeft("Figma")      // move specific app
 
 // App management
@@ -272,8 +274,6 @@ actions.media.volumeDown(10)
 // System
 actions.system.sleep()
 actions.system.lockScreen()
-actions.system.missionControl()
-actions.system.emptyTrash()
 
 // Run a Shortcut from the macOS Shortcuts app
 actions.shortcut("My Shortcut Name")
@@ -365,48 +365,3 @@ await rk.stop()
 // (by default rethocker keeps the event loop alive)
 rk.unref()
 ```
-
-## API reference
-
-### `rethocker(rules?, options?)` → `RethockerHandle`
-
-| Option | Type | Description |
-|---|---|---|
-| `binaryPath` | `string?` | Override the native binary path |
-
-### `RethockerHandle`
-
-| Method | Returns | Description |
-|---|---|---|
-| `add(rule \| rule[])` | `void` | Add one or more rules |
-| `remove(id)` | `void` | Remove a rule permanently |
-| `enable(id?)` | `void` | Enable a rule by ID, or all rules if no ID |
-| `disable(id?)` | `void` | Disable a rule by ID, or all rules if no ID |
-| `on(event, listener)` | `() => void` | Subscribe to an event; returns an unsubscribe function |
-| `execute(command)` | `Promise<void>` | Run a shell command immediately (accepts `string \| string[]`) |
-| `start()` | `Promise<void>` | Await daemon readiness (optional) |
-| `stop()` | `Promise<void>` | Stop the daemon |
-| `unref()` | `void` | Allow the process to exit while the daemon runs |
-| `ready` | `boolean` | Whether the daemon is ready |
-
-### Events
-
-| Event | Arguments | Description |
-|---|---|---|
-| `"ready"` | — | Daemon ready |
-| `"key"` | `KeyEvent` | Every key event (stream auto-activates on subscribe) |
-| `"accessibilityDenied"` | — | Accessibility permission not granted |
-| `"error"` | `code, message` | Native daemon error |
-| `"exit"` | `code` | Native process exited unexpectedly |
-
-### `KeyEvent`
-
-| Field | Type | Description |
-|---|---|---|
-| `type` | `"keydown" \| "keyup" \| "flags"` | Event type |
-| `keyCode` | `number` | macOS virtual key code |
-| `modifiers` | `Modifier[]` | Active modifiers |
-| `app` | `string?` | Frontmost app display name |
-| `appBundleID` | `string?` | Frontmost app bundle ID |
-| `suppressed` | `boolean` | Whether the key was consumed |
-| `ruleID` | `string?` | ID of the matched rule |
