@@ -95,5 +95,13 @@ jobs:
 
           gh api repos/benjamine/homebrew-tap/dispatches \
             --method POST \
-            --field event_type=rethocker-release \
-            --field client_payload="{\"version\":\"${VERSION_BARE}\",\"sha256_arm64\":\"${SHA256_ARM64}\",\"sha256_x64\":\"${SHA256_X64}\"}"
+            --input - <<EOF
+          {
+            "event_type": "rethocker-release",
+            "client_payload": {
+              "version": "${VERSION_BARE}",
+              "sha256_arm64": "${SHA256_ARM64}",
+              "sha256_x64": "${SHA256_X64}"
+            }
+          }
+          EOF
