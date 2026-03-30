@@ -183,26 +183,44 @@ async function cmdRunConfig(configFile: string) {
 
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
-const HELP = `
-Usage: rethocker <command>
+function buildHelp() {
+  const lines = [
+    "Usage: rethocker <command>",
+    "",
+    "Commands:",
+    "  install     Scaffold a config file and set up a background agent that",
+    "              starts on login and auto-reloads when the config is saved",
+    "  uninstall   Stop the background agent and remove it (keeps your config)",
+    "  restart     Restart the background agent",
+    "  status      Show whether the background agent is running",
+    "  log         Live key monitor — shows keypresses in rethocker rule syntax",
+    "              so you can copy-paste them directly into your config",
+    "  help        Print this help message",
+    "",
+  ];
 
-Commands:
-  install     Scaffold a config file and set up a background agent that
-              starts on login and auto-reloads when the config is saved
-  uninstall   Stop the background agent and remove it (keeps your config)
-  restart     Restart the background agent
-  status      Show whether the background agent is running
-  log         Live key monitor — shows keypresses in rethocker rule syntax
-              so you can copy-paste them directly into your config
-  help        Print this help message
+  if (existsSync(PLIST_FILE)) {
+    const result = run([
+      "launchctl",
+      "print",
+      `${AGENT_DOMAIN}/${AGENT_LABEL}`,
+    ]);
+    const running = result.ok;
+    lines.push(
+      `Config: ${tildeify(CONFIG_FILE)} (your rethocker rules are here)`,
+    );
+    lines.push(`Status: ${running ? "running" : "not running"}`);
+    if (!running)
+      lines.push('Run "rethocker restart" to start the background agent.');
+  } else {
+    lines.push(
+      `Config: ${tildeify(CONFIG_FILE)} (not found — run "rethocker install")`,
+    );
+  }
 
-Install via Homebrew:
-  brew tap benjamine/tap
-  brew install rethocker
-  rethocker install
-
-Docs: ${GITHUB}
-`.trim();
+  lines.push("", `Docs: ${GITHUB}`);
+  return lines.join("\n");
+}
 
 // ─── Command dispatch ─────────────────────────────────────────────────────────
 
@@ -240,12 +258,12 @@ switch (subcommand) {
   case "help":
   case "--help":
   case "-h":
-    console.log(HELP);
+    console.log(buildHelp());
     break;
 
   default:
     if (subcommand) console.error(`Unknown command: "${subcommand}"\n`);
-    console.log(HELP);
+    console.log(buildHelp());
     process.exit(subcommand ? 1 : 0);
 }
 
