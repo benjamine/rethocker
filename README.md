@@ -1,8 +1,27 @@
-# rethocker
+<p align="center">
+  <img src="src/assets/logo.png" width="280px" align="center" alt="rethocker logo" />
+  <h1 align="center">rethocker</h1>
+  <p align="center">
+    System-wide key interception and remapping for macOS, in TypeScript.
+  </p>
+</p>
 
-Global key interception and remapping for macOS. Intercept any key or combo system-wide, remap keys, fire shell commands, react to key sequences, and scope rules to specific apps — all from TypeScript.
+<!--- badges -->
+<p align="center">
+  <a href="https://github.com/benjamine/rethocker/actions?query=branch%3Amain"><img src="https://github.com/benjamine/rethocker/actions/workflows/ci.yml/badge.svg?event=push&branch=main" alt="rethocker CI status" /></a>
+  <a href="https://twitter.com/beneidel" rel="nofollow"><img src="https://img.shields.io/badge/created%20by-@beneidel-BACABA.svg" alt="Created by Benjamin Eidelman"></a>
+  <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/github/license/benjamine/rethocker" alt="License"></a>
+  <a href="https://www.npmjs.com/package/rethocker" rel="nofollow"><img src="https://img.shields.io/npm/dw/rethocker.svg" alt="npm"></a>
+  <a href="https://github.com/benjamine/rethocker" rel="nofollow"><img src="https://img.shields.io/github/stars/benjamine/rethocker" alt="stars"></a>
+</p>
 
-Requires **macOS 13+** and **Accessibility permission** (prompted automatically on first run).
+---
+
+- Requires **macOS 13+** and **Accessibility permission** (prompted automatically on first run).
+- Built with a native daemon for low-latency key interception, and a TypeScript API for maximum flexibility and AI agent friendliness.
+- Intercept any key or key chord, with per-app scoping and advanced conditions.
+- Remap to other keys, execute shell commands, or call TypeScript handlers with full access to the API.
+- Bundled with convenient actions for common macOS tasks like window management, media control, etc..
 
 ## Install
 
@@ -14,7 +33,7 @@ brew install rethocker
 rethocker install
 ```
 
-`rethocker install` scaffolds `~/.config/rethocker/default.ts` and registers a LaunchAgent that starts on login and auto-reloads whenever you save the file.
+`rethocker install` scaffolds `~/.config/rethocker/default.ts` (where you write your own rules) and registers a LaunchAgent that starts on login and auto-reloads whenever you save the file.
 
 ```bash
 rethocker log      # live key monitor — see what rethocker captures
@@ -34,6 +53,8 @@ bun add rethocker
 ## Usage
 
 ```ts
+#!/usr/bin/env bun
+
 import { actions, Key, rethocker } from "rethocker"
 
 const rk = rethocker([
