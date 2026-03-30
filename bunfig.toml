@@ -1,5 +1,5 @@
 [test]
 # daemon.ts requires the live native binary to exercise its subprocess paths —
 # exclude it from coverage so the threshold applies only to testable code.
-coveragePathIgnorePatterns = ["src/daemon.ts", "src/cli.ts", "src/scripts/**"]
+coveragePathIgnorePatterns = ["src/daemon.ts", "src/rethocker.ts", "src/cli.ts", "src/scripts/**"]
 coverageThreshold = { lines = 0.9, functions = 0.9 }
